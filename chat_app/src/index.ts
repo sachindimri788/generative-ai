@@ -9,7 +9,7 @@ const openai = new OpenAI({
 });
 
 // Limit the total tokens in the conversation context
-const MAX_TOKENS = 700;
+const MAX_TOKENS = 400;
 
 const context: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
   {
