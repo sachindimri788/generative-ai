@@ -16,6 +16,27 @@ function getOrderStatus(orderId: string) {
   return `Order ${orderId} is currently: ${status}`;
 }
 
+async function callOpenAIChatCompletion(options: {
+  messages: OpenAI.Chat.ChatCompletionMessageParam[];
+  model?: string;
+  temperature?: number;
+  tools?: any[];
+  tool_choice?: any;
+  max_tokens?: number;
+}) {
+  const payload: any = {
+    model: options.model || "openai/gpt-4o",
+    messages: options.messages,
+    temperature: options.temperature ?? 0.0,
+    tools: options.tools,
+    max_tokens: options.max_tokens ?? 500,
+  };
+  if (options.tool_choice !== undefined) {
+    payload.tool_choice = options.tool_choice;
+  }
+  return await openai.chat.completions.create(payload);
+}
+
 async function callOpenAIWithTools() {
   const context: OpenAI.Chat.ChatCompletionMessageParam[] = [
     {
@@ -31,7 +52,7 @@ async function callOpenAIWithTools() {
   ];
 
   // configure chat tools (first openAI call)
-  const response = await openai.chat.completions.create({
+  const response = await callOpenAIChatCompletion({
     model: "openai/gpt-4o",
     messages: context,
     tools: [
@@ -63,8 +84,9 @@ async function callOpenAIWithTools() {
 
   // decide which tool to call (if any)
   const willInvokeFunction = response.choices[0].finish_reason === "tool_calls";
-  const toolCall = response.choices[0].message.tool_calls?.[0];
   if (willInvokeFunction) {
+    const toolCall = response.choices[0].message.tool_calls?.[0];
+
     if (
       toolCall &&
       toolCall.type === "function" &&
@@ -96,7 +118,7 @@ async function callOpenAIWithTools() {
     }
   }
 
-  const secondResponse = await openai.chat.completions.create({
+  const secondResponse = await callOpenAIChatCompletion({
     model: "openai/gpt-4o",
     messages: context,
     max_tokens: 500,
