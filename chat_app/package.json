@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "basic_chat": "node -r ts-node/register --env-file=.env src/basic_chat.ts",
-    "tools": "node -r ts-node/register --env-file=.env src/tools.ts"
+    "tools": "node -r ts-node/register --env-file=.env src/tools.ts",
+    "flight_assistant": "node -r ts-node/register --env-file=.env src/flight_assistant.ts"
   },
   "author": "",
   "license": "ISC",
