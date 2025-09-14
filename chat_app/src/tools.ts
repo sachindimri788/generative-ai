@@ -9,6 +9,13 @@ function getTimeOfDay() {
   return new Date().toLocaleTimeString();
 }
 
+function getOrderStatus(orderId: string) {
+  // Mock order status
+  const statuses = ["Processing", "Shipped", "Delivered", "Cancelled"];
+  const status = statuses[Math.floor(Math.random() * statuses.length)];
+  return `Order ${orderId} is currently: ${status}`;
+}
+
 async function callOpenAIWithTools() {
   const context: OpenAI.Chat.ChatCompletionMessageParam[] = [
     {
@@ -18,7 +25,8 @@ async function callOpenAIWithTools() {
     },
     {
       role: "user",
-      content: "What time is it?",
+      // content: "What time is it?", for testing getTimeOfDay
+      content: "What is the status of my order 12345?", // for testing getOrderStatus
     },
   ];
 
@@ -34,6 +42,20 @@ async function callOpenAIWithTools() {
           description: "Get the current time of day",
         },
       },
+      {
+        type: "function",
+        function: {
+          name: "getOrderStatus",
+          description: "Get the status of an order by its ID",
+          parameters: {
+            type: "object",
+            properties: {
+              orderId: { type: "string", description: "The ID of the order" },
+            },
+            required: ["orderId"],
+          },
+        },
+      },
     ],
     tool_choice: "auto", // let the model decide if and which tool to use
     max_tokens: 500,
@@ -42,19 +64,36 @@ async function callOpenAIWithTools() {
   // decide which tool to call (if any)
   const willInvokeFunction = response.choices[0].finish_reason === "tool_calls";
   const toolCall = response.choices[0].message.tool_calls?.[0];
-  if (
-    willInvokeFunction &&
-    toolCall &&
-    toolCall.type === "function" &&
-    toolCall.function?.name === "getTimeOfDay"
-  ) {
-    const toolResponse = getTimeOfDay();
-    context.push(response.choices[0].message);
-    context.push({
-      role: "tool",
-      tool_call_id: toolCall.id,
-      content: toolResponse,
-    });
+  if (willInvokeFunction) {
+    if (
+      toolCall &&
+      toolCall.type === "function" &&
+      toolCall.function?.name === "getTimeOfDay"
+    ) {
+      const toolResponse = getTimeOfDay();
+      context.push(response.choices[0].message);
+      context.push({
+        role: "tool",
+        tool_call_id: toolCall.id,
+        content: toolResponse,
+      });
+    }
+
+    if (
+      toolCall &&
+      toolCall.type === "function" &&
+      toolCall.function?.name === "getOrderStatus"
+    ) {
+      const rawArgument = toolCall.function.arguments;
+      const parsedArgument = JSON.parse(rawArgument || "{}");
+      const toolResponse = getOrderStatus(parsedArgument.orderId);
+      context.push(response.choices[0].message);
+      context.push({
+        role: "tool",
+        tool_call_id: toolCall.id,
+        content: toolResponse,
+      });
+    }
   }
 
   const secondResponse = await openai.chat.completions.create({
@@ -63,7 +102,7 @@ async function callOpenAIWithTools() {
     max_tokens: 500,
   });
 
-  console.log("Second response:", secondResponse.choices[0].message.content);
+  console.log("Response:", secondResponse.choices[0].message.content);
 }
 
 callOpenAIWithTools();
