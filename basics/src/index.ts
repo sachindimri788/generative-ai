@@ -30,6 +30,20 @@ async function main() {
         role: "user",
         content: prompt, // The user's question
       },
+      // include images in the conversation
+      // {
+      //   role: "user",
+      //   content: [
+      //     { type: "text", text: "What’s in this picture?" },
+      //     {
+      //       type: "image_url",
+      //       image_url: {
+      //         url: "https://upload.wikimedia.org/wikipedia/commons/9/99/Black_square.jpg",
+      //       },
+      //     },
+      //   ],
+      // },
+
       // 'assistant' is the AI response role; use it to provide previous AI responses for context
       // {
       //   role: "assistant",

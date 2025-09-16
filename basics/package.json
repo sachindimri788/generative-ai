@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node -r ts-node/register --env-file=.env src/index.ts"
+    "start": "node -r ts-node/register --env-file=.env src/index.ts",
+    "images": "node -r ts-node/register --env-file=.env src/images.ts",
+    "audio": "node -r ts-node/register --env-file=.env src/audio.ts"
   },
   "author": "",
   "license": "ISC",
