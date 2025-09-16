@@ -1,0 +1,17 @@
+{
+  "name": "chat_app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node -r ts-node/register --env-file=.env src/emb/dataHandling.ts",
+    "similar": "node -r ts-node/register --env-file=.env src/emb/similar.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}

@@ -1,0 +1,3 @@
+EMBEDDING_API_KEY=key
+EMBEDDING_BASE_URL=https://api.jina.ai/v1/embeddings
+EMBEDDING_MODEL=jina-embeddings-v3
