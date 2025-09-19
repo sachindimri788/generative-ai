@@ -1,0 +1,19 @@
+{
+  "name": "langchain",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node -r ts-node/register --env-file=.env src/Model.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@langchain/community": "^0.3.56",
+    "langchain": "^0.3.34"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
