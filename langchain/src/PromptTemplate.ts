@@ -1,21 +1,10 @@
-import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import {
   StringOutputParser,
   CommaSeparatedListOutputParser,
   StructuredOutputParser,
 } from "@langchain/core/output_parsers";
-
-const model = new ChatOpenAI({
-  modelName: "gpt-4o-mini",
-  temperature: 0.8,
-  apiKey: process.env.OPENAI_API_KEY,
-  configuration: {
-    baseURL: process.env.OPENAI_BASE_URL,
-  },
-  maxTokens: 500,
-  // verbose:true   # 👈 Logs chain execution
-});
+import { chatModel } from "./config";
 
 // Example 1: Create a prompt template from a string
 // and use it to generate a prompt with variables
@@ -23,7 +12,9 @@ async function fromTemplate() {
   const prompt = ChatPromptTemplate.fromTemplate(
     "Write a short description for the following product: {product_name}"
   );
-  const chain = await prompt.pipe(model).invoke({ product_name: "bicycle" });
+  const chain = await prompt
+    .pipe(chatModel)
+    .invoke({ product_name: "bicycle" });
   console.log(chain.content);
 }
 
@@ -34,7 +25,7 @@ async function fromMessages() {
     ["system", "Write a short description for a product"],
     ["human", "The product is a {product_name}"],
   ]);
-  const chain = await prompt.pipe(model).invoke({
+  const chain = await prompt.pipe(chatModel).invoke({
     product_name: "bicycle",
   });
   console.log(chain.content);
@@ -49,7 +40,7 @@ async function stringParser() {
 
   const parser = new StringOutputParser();
   const chain = await prompt
-    .pipe(model)
+    .pipe(chatModel)
     .pipe(parser)
     .invoke({ product_name: "bicycle" });
   console.log(chain);
@@ -63,7 +54,7 @@ async function commaSeperatedParser() {
 
   const parser = new CommaSeparatedListOutputParser();
   const chain = await prompt
-    .pipe(model)
+    .pipe(chatModel)
     .pipe(parser)
     .invoke({ product_name: "bicycle" });
   console.log(chain);
@@ -82,7 +73,7 @@ async function structuredParser() {
   });
 
   const formatInstructions = outputParser.getFormatInstructions();
-  const chain = await prompt.pipe(model).pipe(outputParser).invoke({
+  const chain = await prompt.pipe(chatModel).pipe(outputParser).invoke({
     phrase: "A blue bicycle with a price of $100",
     format_instructions: formatInstructions,
   });

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node -r ts-node/register --env-file=.env src/Model.ts",
-    "prompt-template": "node -r ts-node/register --env-file=.env src/PromptTemplate.ts"
+    "prompt-template": "node -r ts-node/register --env-file=.env src/PromptTemplate.ts",
+    "rag-basic": "node -r ts-node/register --env-file=.env src/rag/Basic.ts"
   },
   "author": "",
   "license": "ISC",
