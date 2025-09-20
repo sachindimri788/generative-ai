@@ -1,7 +1,7 @@
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Document } from "langchain/document";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { chatModel, generateEmbeddings } from "../config";
+import { chatModel, customEmbeddings, generateEmbeddings } from "../config";
 
 const myData = [
   "My name is sachin",
@@ -14,57 +14,47 @@ const myData = [
 
 const question = "Where do I live?";
 
-// 1️⃣ Wrap custom embeddings in an object compatible with MemoryVectorStore
-const customEmbeddings = {
-  embedDocuments: async (texts: string[]) => {
-    const result = await generateEmbeddings(texts);
-    if (!result) throw new Error("Failed to generate document embeddings");
-    return result;
-  },
-  embedQuery: async (text: string) => {
-    const result = await generateEmbeddings([text]);
-    if (!result) throw new Error("Failed to generate query embedding");
-    return result[0];
-  },
-};
-
 async function main() {
-  // Create MemoryVectorStore with custom embeddings
-  const vectorStore = new MemoryVectorStore(customEmbeddings);
+  try {
+    // Create MemoryVectorStore with custom embeddings
+    const vectorStore = new MemoryVectorStore(customEmbeddings);
 
-  // Add documents with precomputed embeddings
-  const embeddings = await generateEmbeddings(myData);
-  myData.forEach((text, idx) => {
-    vectorStore.addVectors(
-      [embeddings[idx]],
-      [new Document({ pageContent: text })]
-    );
-  });
+    // Add documents with precomputed embeddings
+    const embeddings = await generateEmbeddings(myData);
+    myData.forEach((text, idx) => {
+      vectorStore.addVectors(
+        [embeddings[idx]],
+        [new Document({ pageContent: text })]
+      );
+    });
 
-  console.log("Vector store populated.");
+    console.log("Vector store populated.");
 
-  // Use retriever to get top-k relevant documents
-  const retriever = vectorStore.asRetriever({ k: 2 });
-  const relevantDocs = await retriever.invoke(question);
-  const context = relevantDocs.map((doc) => doc.pageContent).join("\n");
+    // Use retriever to get top-k relevant documents
+    const retriever = vectorStore.asRetriever({ k: 2 });
+    const relevantDocs = await retriever.invoke(question);
+    const context = relevantDocs.map((doc) => doc.pageContent).join("\n");
 
-  console.log("Retrieved context:\n", context);
+    console.log("Retrieved context:\n", context);
 
-  // Create chat prompt including context
-  const template = ChatPromptTemplate.fromMessages([
-    [
-      "system",
-      "You are a helpful assistant. Answer the user question using the provided context:\n\n{context}",
-    ],
-    ["user", "{input}"],
-  ]);
+    // Create chat prompt including context
+    const template = ChatPromptTemplate.fromMessages([
+      [
+        "system",
+        "You are a helpful assistant. Answer the user question using the provided context:\n\n{context}",
+      ],
+      ["user", "{input}"],
+    ]);
 
-  // Generate answer
-  const response = await template
-    .pipe(chatModel)
-    .invoke({ input: question, context });
+    // Generate answer
+    const response = await template
+      .pipe(chatModel)
+      .invoke({ input: question, context });
 
-  console.log("\nAnswer:", response.content);
+    console.log("\nAnswer:", response.content);
+  } catch (error) {
+    console.error("Error in RAG process:", error);
+  }
 }
 
 main();

@@ -80,8 +80,15 @@ async function structuredParser() {
   console.log(chain);
 }
 
-// fromTemplate();
-// fromMessages();
-// stringParser();
-// commaSeperatedParser();
-structuredParser();
+async function main() {
+  try {
+    // fromTemplate();
+    // fromMessages();
+    // stringParser();
+    // commaSeperatedParser();
+    structuredParser();
+  } catch (error) {
+    console.error("Error in PromptTemplate examples:", error);
+  }
+}
+main();
