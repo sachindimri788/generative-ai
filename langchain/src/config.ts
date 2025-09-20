@@ -11,20 +11,6 @@ export const chatModel = new ChatOpenAI({
   // verbose:true   # 👈 Logs chain execution
 });
 
-// Wrap custom embeddings in an object compatible with MemoryVectorStore
-export const customEmbeddings = {
-  embedDocuments: async (texts: string[]) => {
-    const result = await generateEmbeddings(texts);
-    if (!result) throw new Error("Failed to generate document embeddings");
-    return result;
-  },
-  embedQuery: async (text: string) => {
-    const result = await generateEmbeddings([text]);
-    if (!result) throw new Error("Failed to generate query embedding");
-    return result[0];
-  },
-};
-
 export async function generateEmbeddings(text: string[]): Promise<number[][]> {
   const apiKey = process.env.EMBEDDING_API_KEY;
   const url = process.env.EMBEDDING_BASE_URL as string;
@@ -67,3 +53,17 @@ export async function generateEmbeddings(text: string[]): Promise<number[][]> {
     return [];
   }
 }
+
+// Wrap custom embeddings in an object compatible with MemoryVectorStore
+export const customEmbeddings = {
+  embedDocuments: async (texts: string[]) => {
+    const result = await generateEmbeddings(texts);
+    if (!result) throw new Error("Failed to generate document embeddings");
+    return result;
+  },
+  embedQuery: async (text: string) => {
+    const result = await generateEmbeddings([text]);
+    if (!result) throw new Error("Failed to generate query embedding");
+    return result[0];
+  },
+};
