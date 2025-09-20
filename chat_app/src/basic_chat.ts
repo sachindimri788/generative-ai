@@ -1,12 +1,8 @@
 import OpenAI from "openai";
 import { encoding_for_model } from "tiktoken";
+import { openai } from "./config";
 
 const encoder = encoding_for_model("gpt-4o-mini");
-
-const openai = new OpenAI({
-  baseURL: process.env.OPENAI_BASE_URL,
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // Limit the total tokens in the conversation context
 const MAX_TOKENS = 400;

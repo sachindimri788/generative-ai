@@ -1,9 +1,5 @@
 import OpenAI from "openai";
-
-const openai = new OpenAI({
-  baseURL: process.env.OPENAI_BASE_URL,
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { openai } from "./config";
 
 function getAvailableFlights(departure: string, destination: string): string[] {
   console.log("Getting available flights");
