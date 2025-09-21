@@ -1,0 +1,20 @@
+{
+  "name": "huggingface",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node -r ts-node/register --env-file=.env src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@huggingface/inference": "^4.8.0"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@types/node": "^24.3.0",
+    "@types/pdf-parse": "^1.1.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
