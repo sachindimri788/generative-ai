@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Transformer Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        input,
+        button {
+            padding: 8px;
+            margin: 5px 0;
+            width: 300px;
+        }
+
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        #controls {
+            display: none;
+        }
+
+        /* Hidden until model loads */
+    </style>
+</head>
+
+<body>
+    <h1>Sentiment Analysis in Browser</h1>
+    <div id="controls">
+        <input type="text" id="userInput" placeholder="Type a sentence" />
+        <button id="analyzeBtn">Analyze</button>
+    </div>
+    <div id="result">Loading model, please wait...</div>
+
+    <script type="module">
+        import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.1.0/dist/transformers.min.js';
+
+        let sentimentPipeline = null;
+
+        async function loadModel() {
+            try {
+                // Load the sentiment analysis pipeline
+                sentimentPipeline = await pipeline('sentiment-analysis');
+
+                // Show the input controls after the model is fully loaded
+                document.getElementById('controls').style.display = 'block';
+                document.getElementById('result').textContent = 'Model loaded! Type a sentence above.';
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error loading model: ' + error;
+            }
+        }
+
+        async function analyzeText() {
+            const text = document.getElementById('userInput').value.trim();
+            if (!text || !sentimentPipeline) return;
+
+            document.getElementById('result').textContent = 'Analyzing...';
+            try {
+                const result = await sentimentPipeline(text);
+                document.getElementById('result').textContent =
+                    `Sentiment: ${result[0].label}, Confidence: ${(result[0].score * 100).toFixed(2)}%`;
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error analyzing text: ' + error;
+            }
+        }
+
+        document.getElementById('analyzeBtn').addEventListener('click', analyzeText);
+
+        // Load the model when the page opens
+        loadModel();
+    </script>
+</body>
+
+</html>
